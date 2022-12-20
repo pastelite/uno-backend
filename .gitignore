@@ -1,2 +1,4 @@
 node_modules
 out
+prisma/dev.db
+prisma/migrations
