@@ -12,6 +12,7 @@ export default function () {
     passReqToCallback:true
   }, async (req:Request, payload:any, done: VerifiedCallback) => {
     req.jwtPayload = payload
+    //done(null, false, {"message":"achooo"})
     done(null, {}, "lala")
   }))
 }

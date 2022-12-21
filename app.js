@@ -9,6 +9,7 @@ dotenv.config();
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var apiRouter = require('./routes/api');
+var errorRouter = require('./routes/error');
 
 var app = express();
 
@@ -25,6 +26,8 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/', indexRouter);
 app.use('/api', apiRouter);
 app.use('/users', usersRouter);
+app.use('/error', errorRouter);
+app.use('/lobby', require('./routes/lobby'));
 
 const port = 3000
 

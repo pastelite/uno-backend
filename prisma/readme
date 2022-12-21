@@ -1,0 +1,13 @@
+ok, I have to think about how the project should basic_controller
+
+It's the shitty uno backend that can play uno. so let's decide something
+
+1. this project does not need security. I will not save password and userdata will be deleted
+when the lobby close. this mean no back up is required since why would i do that.
+2. since above is the case, jwt seem like a good idea
+3. any player in lobby can access room info, players, turn, and card on the top of deck
+4. there will be no card history since why would we need that
+5. if card on desk run out there will be a shuffle in db, shuffle will be automatic
+6. only the player can see card on their hands
+
+ok then let's implement it

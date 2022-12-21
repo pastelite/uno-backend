@@ -76,7 +76,7 @@ export async function loginUser(req: Request, res: Response, next: NextFunction)
   // console.log(a)
 
   if (!isPasswordCorrect) {
-    res.status(400).json({
+    return res.status(400).json({
       message: "incorrect password"
     })
   }
@@ -84,7 +84,7 @@ export async function loginUser(req: Request, res: Response, next: NextFunction)
   let token = jwt.sign({
     id: user.id,
     username: user.username,
-  },process.env.SECRET,{expiresIn:"2s"})
+  },process.env.SECRET,{expiresIn:"1h"})
   res.json(token)
   
 

@@ -10,9 +10,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// old will delete soon
+// we don't need this since security is not an important thing
+// (we didn't store even a password)
 model User {
-  id  Int   @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   username String @unique
-  password String 
-  salt     String 
+  password String
+  salt     String
+}
+
+model Lobby {
+  code        String    @id
+  name        String
+  description String?
+  cardsList   String
+  turnNo      Int       @default(0)
+  way         Int       @default(1)
+  playerTurn  Int       @default(0)
+  playerList  Player[]
+}
+
+model Player {
+  id          Int     @id @default(autoincrement())
+  lobby       Lobby   @relation(fields: [lobbyCode], references: [code])
+  lobbyCode   String
+  lobbyOrder  Int
+  name        String
+  isActive    Boolean @default(true)
+  cardsList   String  @default("")
+
+  // I should delete the player when player disconnect or kicked 
+  // but I don't want to calculate playerTurn and change order of everyone in lobby
+  // let's say if playerTurn landed on inactive player just add or minus one
 }
