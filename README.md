@@ -3,9 +3,9 @@
 ## todo
 - [x] basic lobby
 - [x] lobby joining (+jwt)
-- [] move the turn
-- [] card playing
-- [] winning
-- [] lobby deleting
-- [] edge case (disconnection)
-- [] clean up code
+- [ ] move the turn
+- [ ] card playing
+- [ ] winning
+- [ ] lobby deleting
+- [ ] edge case (disconnection)
+- [ ] clean up code

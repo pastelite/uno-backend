@@ -24,12 +24,13 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use('/', indexRouter);
-app.use('/api', apiRouter);
-app.use('/users', usersRouter);
+// app.use('/api', apiRouter);
+// app.use('/users', usersRouter);
 app.use('/error', errorRouter);
 app.use('/lobby', require('./routes/lobby'));
 
-const port = 3000
+// const port = 3000
+let port = process.env.PORT || 3000
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
@@ -56,7 +57,7 @@ app.use(function(err, req, res, next) {
 });
 
 // passport config
-import psconfig from "./config/passport"
-psconfig()
+// import psconfig from "./config/passport"
+// psconfig()
 
-module.exports = app;
+// module.exports = app;
