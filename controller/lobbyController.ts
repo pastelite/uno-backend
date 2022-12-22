@@ -10,6 +10,20 @@ const prisma = new PrismaClient()
 
 export let listLobby: RequestHandler = async (req, res, next) => {
 
+  if (req.query.help) {
+    return res.status(200).render('doc',{
+      path: "/lobby/",
+      type: "get",
+      explain: "list the lobby",
+      body: {
+        name: {
+          data: "lala"
+        },
+        name2: "idk bro"
+      }
+    })
+  }
+
   let lobbyList = await prisma.lobby.findMany({
     select: {
       code: true,

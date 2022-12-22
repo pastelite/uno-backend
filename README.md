@@ -9,3 +9,4 @@
 - [ ] lobby deleting
 - [ ] edge case (disconnection)
 - [ ] clean up code
+- [ ] documentation

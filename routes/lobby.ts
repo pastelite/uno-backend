@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction, Router } from "express";
 import { listLobby, createLobby, joinLobby, getLobby, jwtAuthentication } from "../controller/lobbyController";
-import { route } from ".";
 
 // /lobby/:code/
 let lobbyRouter = Router();

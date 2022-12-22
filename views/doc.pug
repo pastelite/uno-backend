@@ -1,0 +1,54 @@
+doctype html
+html
+  head
+    title miniUNO API documentation
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    - 
+      // path calculation
+      let back = path.slice()
+      back.pop()
+      if (back.length == 0) {
+        backstr = '/'
+      } else {
+        backstr = '/'+back.join('/')+'/'
+      }
+
+      if (path.length == 0) {
+        pathstr="/"
+        backstr=null
+      } else {
+        pathstr="/"+path.join('/')+'/'
+      }
+    a(href='/docs'+backstr)= backstr ? '← ' + backstr : null
+    if docsList
+      for data in docsList
+        h1= pathstr
+          if data.type
+            span(class=`${data.type} block`)= data.type
+        if data.info 
+          p= data.info
+        if data.body
+          h2 Body
+          table
+            each val, key in data.body
+              tr
+                th= key 
+                td= val.data || val
+                  if moreinfo
+                    div.moreinfo= moreinfo
+            //- if val
+            //-   li= key + ": " + 
+    if childList 
+      h2 Childs
+      ul
+        for child in childList 
+          li
+            a(href='/docs'+pathstr+child)= child
+    //- if query
+    //-   h2 Query
+    //-   ul
+    //-     each val, key in body
+    //-       if val
+    //-         li= key + ": " + val
+  

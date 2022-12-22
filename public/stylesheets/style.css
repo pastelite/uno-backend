@@ -6,3 +6,38 @@ body {
 a {
   color: #00B7FF;
 }
+
+.block {
+  margin: 0.25em;
+  padding: 0.2em;
+  border: 1px solid gray;
+  border-radius: 0.25em;
+}
+
+.get {
+  border: 1px solid green;
+  background-color: lightgreen;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0 .4em;
+}
+
+th {
+  border-right: 2px solid gray;
+  text-align: right;
+  vertical-align: top;
+}
+
+.moreinfo {
+  background-color: lightgray;
+  border: 1px solid black;
+  margin: 0.2em 0;
+  padding: 0.2em;
+  border-radius: 0.25em;
+  width: fit-content;
+}
