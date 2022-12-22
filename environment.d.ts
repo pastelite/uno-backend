@@ -1,3 +1,4 @@
+import { Lobby, Player } from "@prisma/client";
 import { Passport } from "passport";
 
 declare global {
@@ -13,8 +14,11 @@ declare global {
 
   namespace Express {
     export interface Request {
-      account?: any;       // what usually passthorugh using passport
-      jwtPayload?: any;   
+      account?: any       // what usually passthorugh using passport
+      jwtPayload?: any   
+      // from our database:
+      player?: Player
+      lobby?: Lobby
     }
   }
 }

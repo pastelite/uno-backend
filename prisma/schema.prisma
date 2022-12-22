@@ -29,6 +29,8 @@ model Lobby {
   way         Int       @default(1)
   playerTurn  Int       @default(0)
   playerList  Player[]
+  playerNum   Int       @default(0)
+  isStart     Boolean   @default(false)
 }
 
 model Player {

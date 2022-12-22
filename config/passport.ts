@@ -4,6 +4,8 @@ import passport from "passport"
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
+// export const jwtSrat = 
+
 
 export default function () {
   passport.use('jwt', new JwtStrategy({
