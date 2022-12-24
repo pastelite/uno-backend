@@ -1,5 +1,9 @@
-import { Lobby, Player } from "@prisma/client";
+import { Lobby, Player, Prisma } from "@prisma/client";
 import { Passport } from "passport";
+
+const lobbyWithPlayer = Prisma.validator<Prisma.LobbyArgs>()({
+  include: {playerList: true}
+})
 
 declare global {
   namespace NodeJS {
@@ -18,7 +22,8 @@ declare global {
       jwtPayload?: any   
       // from our database:
       player?: Player
-      lobby?: Lobby
+      lobby?: Prisma.LobbyGetPayload<typeof lobbyWithPlayer>
+      message?: string
     }
   }
 }

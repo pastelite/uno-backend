@@ -11,7 +11,7 @@ const prisma = new PrismaClient()
 export let listLobby: RequestHandler = async (req, res, next) => {
 
   if (req.query.help) {
-    return res.status(200).render('doc',{
+    return res.status(200).render('doc', {
       path: "/lobby/",
       type: "get",
       explain: "list the lobby",
@@ -188,30 +188,34 @@ export let jwtAuthentication: RequestHandler = async (req, res, next) => {
     new JwtStrategy({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.SECRET,
-      //passReqToCallback: true
     }, async (payload, done) => {
 
-      // get player and lobby
-      let player = await prisma.player.findFirst({
-        where: {
-          id: payload.player
-        },
-      })
+      // sdaweq
       let lobby = await prisma.lobby.findFirst({
-        where: {
-          code: payload.lobby
-        }
+        where: {code: payload.lobby},
+        include: {playerList: true}
       })
 
+      // check player id
+      let player;
+      for (let p of lobby?.playerList || []) {
+        if (p.id == payload.player) {
+          player = structuredClone(p)
+          break;
+        }
+      }
+
       // return player and lobby
-      if (payload == null||lobby == null) {
-        done(null,false,"player code or lobby code incorrected")
+      if (!lobby) {
+        done(null, false, "lobby does not exists")
+      } else if (!player) {
+        done(null, false, "you not allowed to access the lobby of other player")
       } else {
         done(null, {lobby,player})
       }
     }
-    ),{ session: false }, (err, user, info)=>{
-      // if (user)
+    ), { session: false }, (err, user, info) => {
+
       if (err || user == false) {
         res.status(403).json({
           message: info
@@ -222,5 +226,5 @@ export let jwtAuthentication: RequestHandler = async (req, res, next) => {
         next()
       }
     }
-  )(req,res,next)
+  )(req, res, next)
 }

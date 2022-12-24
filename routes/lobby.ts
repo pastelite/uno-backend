@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction, Router } from "express";
 import { listLobby, createLobby, joinLobby, jwtAuthentication } from "../controller/lobbyController";
-import { getLobbyAction, postLobbyAction } from "../controller/gameController";
+import { getLobbyAction, lobbyDefaultReply, postLobbyAction } from "../controller/gameController";
 
 // /lobby/:code/
 let lobbyRouter = Router();
 lobbyRouter.use('/',jwtAuthentication)
-lobbyRouter.get('/',getLobbyAction)
-lobbyRouter.post('/',postLobbyAction)
+lobbyRouter.get('/',getLobbyAction, lobbyDefaultReply)
+lobbyRouter.post('/',postLobbyAction, lobbyDefaultReply)
 
 // /lobby/
 let router = Router();

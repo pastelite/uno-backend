@@ -31,6 +31,7 @@ model Lobby {
   playerList  Player[]
   playerNum   Int       @default(0)
   isStart     Boolean   @default(false)
+  ruleset     String    @default("7|t")
 }
 
 model Player {

@@ -2,12 +2,13 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient()
 
 import { RequestHandler } from "express";
+import rulesetReader from "../utils/rulesetReader";
 
 export let getLobbyAction: RequestHandler = async (req, res, next) => {
   switch (req.query.action || req.query.a) {
     case undefined:
     case null:
-      return getLobby(req, res, next)
+      return next()
     default:
       return res.status(400).json({
         message: "action is not supported"
@@ -17,6 +18,10 @@ export let getLobbyAction: RequestHandler = async (req, res, next) => {
 
 export let postLobbyAction: RequestHandler = async (req, res, next) => {
   switch (req.query.action || req.query.a) {
+    case "start":
+      return lobbyStart(req, res, next)
+    case "play":
+      return playCard(req, res, next)
     default:
       return res.status(400).json({
         message: "action is not supported"
@@ -24,50 +29,68 @@ export let postLobbyAction: RequestHandler = async (req, res, next) => {
   }
 }
 
-let getLobby: RequestHandler = async (req, res, next) => {
+export let lobbyDefaultReply: RequestHandler = async (req, res, next) => {
   // can't be null because of jwtAuthentication
-  if (req.account.code != req.lobby!.code) {
-    return res.status(403).json({
-      message: "you not allowed to access the lobby of other player",
-      params: req.account.code,
-      lobby: req.lobby!.code
-    })
-  }
-
-  let { cardsList, ...lobby } = req.lobby!
+  let { cardsList, playerList, ...lobby } = req.lobby!
   let cardOnTop = cardsList.substring(0, 2)
-  let playersList = (await prisma.player.findMany({
-    where: {
-      lobbyCode: lobby.code,
-      isActive: true
-    }
-  })).map((obj: any) => {
-    // use delete for performance
-    let { cardsList, ...rest } = obj
-    delete rest.lobbyCode
-    delete rest.isActive
-    rest["cardsNum"] = cardsList.length
-    return rest
+
+  // count card nums and remove cardsList
+  playerList.map((p:any)=>{
+    p.cardsCount = p.cardsList.length / 2
+    delete p.cardsList
   })
 
   // Return
   return res.status(200).json({
-    lobby: { cardOnTop, playersList, ...lobby },
+    message: req.message,
+    lobby: { cardOnTop, ...lobby,playerList },
     player: req.player
   })
 }
 
-let postStart: RequestHandler = async (req, res, next) => {
-  let lobby = req.lobby!
+let lobbyStart: RequestHandler = async (req, res, next) => {
+  let {code, isStart, cardsList,...lobby} = req.lobby!
+  let ruleset = rulesetReader(lobby.ruleset)
 
-  // update lobby to start
-  let newLobby = await prisma.lobby.update({
-    where: {
-      code: lobby.code
-    },
+  // all active player draw
+  for (let player of lobby.playerList) {
+    // get n cards from cardsLists
+    let cardOnHand = cardsList.substring(0,2*ruleset.startDraw)
+    cardsList = cardsList.substring(2*ruleset.startDraw)
+
+    await prisma.player.update({
+      where: {id: player.id},
+      data: {
+        cardsList: cardOnHand
+      }
+    })
+  }
+
+  // update lobby
+  await prisma.lobby.update({
+    where: {code},
     data: {
-      isStart: true
+      isStart: true,
+      cardsList
     }
   })
 
+  req.message = "started"
+  next()
+}
+
+let playCard: RequestHandler = async (req, res, next) => {
+  let cardPlayed = req.body.card
+
+  // check turn
+  if (req.lobby?.playerTurn != req.player?.lobbyOrder) {
+    req.message = "not your turn"
+    return next()
+  }
+
+  // check cardlist
+  if (cardPlayed.length % 2 != 0 || cardPlayed.length == 0) {
+    req.message = "card input incorrect"
+    return next()
+  }
 }
