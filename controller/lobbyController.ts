@@ -183,51 +183,6 @@ export let joinLobby: RequestHandler = async (req, res, next) => {
   })
 }
 
-export let getLobby: RequestHandler = async (req, res, next) => {
-  // can't be null because of jwtAuthentication
-  if (req.account.code != req.lobby!.code) {
-    return res.status(403).json({
-      message: "you not allowed to access the lobby of other player",
-      params: req.account.code,
-      lobby: req.lobby!.code
-    })
-  }
-
-  let lobby = req.lobby!
-  let cardOnTop = lobby.cardsList.substring(0,2)
-  let playersList: any = (await prisma.player.findMany({
-    select: {
-      id: true,
-      lobbyOrder: true,
-      name: true,
-      cardsList: true,
-      // lobbyCode: false,
-    },
-    where: {
-      lobbyCode: lobby.code,
-      isActive: true
-    }
-  })).map((e:any)=>{
-    e.cardsNum = e.cardsList.length
-    delete e.cardsList
-    return e
-  })
-
-  return res.status(200).json({
-    lobby: {
-      code: lobby.code,
-      name: lobby.name,
-      description: lobby.description,
-      turnNo: lobby.turnNo,
-      way: lobby.way,
-      isStart: lobby.way,
-      cardOnTop,
-      playersList
-    },
-    player: req.player
-  })
-}
-
 export let jwtAuthentication: RequestHandler = async (req, res, next) => {
   passport.authenticate(
     new JwtStrategy({
@@ -240,7 +195,7 @@ export let jwtAuthentication: RequestHandler = async (req, res, next) => {
       let player = await prisma.player.findFirst({
         where: {
           id: payload.player
-        }
+        },
       })
       let lobby = await prisma.lobby.findFirst({
         where: {
