@@ -74,6 +74,7 @@ let playCard: RequestHandler = async (req, res, next) => {
   let cardsListLobby = unoStringToArray(req.lobby!.cardsList)
   let cardsListPlayer = unoStringToArray(req.player!.cardsList)
   let ruleset = rulesetReader(req.lobby!.ruleset)
+  let plusCount = req.lobby!.plusCount
   // let cardOnTop = cardsList[0]
 
   // check turn
@@ -99,6 +100,12 @@ let playCard: RequestHandler = async (req, res, next) => {
   // console.log(cardsListPlayer)
   // console.log(cardsPlayed)
 
+  // check if more than the rule allow
+  if (cardsPlayed.length > 1 && ruleset.canStackCards == false) {
+    req.message = "cannot stack as specify in the ruleset"
+    return next()
+  }
+
 
   // find color/number that player played
   let colorPlayed = "?", numberPlayed = "?"
@@ -109,25 +116,28 @@ let playCard: RequestHandler = async (req, res, next) => {
     colorPlayed = cardsPlayed[0][0]
     numberPlayed = cardsPlayed[0][1]
   } else {
-    let mode: "color" | "number"
+    let mode: "color" | "number" | "plus"
     let returnCardInput = () => {
       req.message = "card input is not match"
       next()
     }
+
+    colorPlayed = cardsPlayed[0][0]
+    numberPlayed = cardsPlayed[0][1]
 
     // check first two cards
     if (cardsPlayed[0][0] == cardsPlayed[1][0]) {
       mode = "color"
     } else if (cardsPlayed[0][1] == cardsPlayed[1][1]) {
       mode = "number"
+    } else if (
+      (cardsPlayed[0][1] == "T" || cardsPlayed[0][1] == "F")
+      && (cardsPlayed[1][1] == "T" || cardsPlayed[1][1] == "F")
+    ) {
+      mode = "plus"
+      numberPlayed = cardsPlayed[0][1] + cardsPlayed[1][1]
     } else {
       return returnCardInput()
-    }
-
-    if (mode == "color") {
-      colorPlayed = cardsPlayed[0][0]
-    } else if (mode == "number") {
-      colorPlayed = cardsPlayed[0][1]
     }
 
     // check the rest of cards
@@ -143,9 +153,18 @@ let playCard: RequestHandler = async (req, res, next) => {
             return returnCardInput()
           }
           break;
+        case "plus":
+          if (cardsPlayed[i][0] != "T" || cardsPlayed[i][0] != "F") {
+            return returnCardInput();
+          } else {
+            numberPlayed += cardsPlayed[i][0];
+          }
+          break;
       }
     }
   }
+
+  console.log(colorPlayed, numberPlayed)
 
   // for card on the top of lobbyList
   colorTop = cardsListLobby[0][0]
@@ -157,137 +176,57 @@ let playCard: RequestHandler = async (req, res, next) => {
     return next()
   }
 
-  // check for +
+  // + on stack
   if (numberTop == "T" || numberTop == "F") {
+    // if cannot stack
     if (ruleset.canStackPlus == false) {
+      // draw
       let cardsDrawed
       [cardsDrawed, cardsListLobby] = drawCardsArray(
         cardsListLobby,
-        numberTop == "T"?2:numberTop == "F"?4:0
+        plusCount
       )
-    } else if (numberPlayed) {
-      // TODO: +2/+4
-      // TODO: stack support
+      cardsListPlayer.concat(cardsDrawed)
+    // if can stack plus and playing +
+    } else if (numberPlayed[0] == "T" || numberPlayed[0] == "F") {
+      for (let char of numberPlayed) {
+        switch (char) {
+          case "F":
+            plusCount += 2
+          case "T":
+            plusCount += 2
+        }
+      }
+      console.log(plusCount)
+    // if can stack plus and playing other
+    } else {
+      // draw
+      let cardsDrawed
+      [cardsDrawed, cardsListLobby] = drawCardsArray(
+        cardsListLobby,
+        plusCount
+      )
+      cardsListPlayer.concat(cardsDrawed)
     }
   }
+
+  // played +
+  if (numberPlayed[0] == "T" || numberPlayed[0] == "F") {
+    for (let char of numberPlayed) {
+      switch (char) {
+        case "F":
+          plusCount += 2
+        case "T":
+          plusCount += 2
+      }
+    }
+    console.log(plusCount)
+  }
+
+  // TODO: stop/reverse/thing like that
 
   // AFTER ENTIRE THING FINISHED
   // await updateLobbyCards(req.lobby!.code,cardsListLobby.join(""))
   // await updatePlayerCards(req.player!.id,cardsListPlayer.join(""))
-
-
-  // // check did user have cards
-  // if (!cardsPlayedString) {
-  //   req.message = "where tf is your card"
-  //   return next()
-  // }
-
-  // // check cardlist
-  // if (cardsPlayedString.length % 2 != 0 || cardsPlayedString.length == 0) {
-  //   req.message = "card input incorrect"
-  //   return next()
-  // }
-
-  // let cardsPlayed = unoStringToArray(cardsPlayedString)
-  // // check if card exist in player hand
-  // for (let c of cardsPlayed) {
-  //   if (!cardsListPlayer.includes(c)) {
-  //     req.message = "this card not exists in your hand"
-  //     return next()
-  //   }
-  // }
-
-  // // Check color and number of cards
-  // let colorPlayed = "?", numberPlayed = "?"
-  // let colorTop: string, numberTop: string
-
-  // // for cardsPlayed
-  // if (cardsPlayed.length == 1) {
-  //   colorPlayed = cardsPlayed[0][0]
-  //   numberPlayed = cardsPlayed[0][1]
-  // } else {
-  //   let mode: "color" | "number"
-  //   let returnCardInput = () => {
-  //     req.message = "card input is not match"
-  //     next()
-  //   }
-
-  //   // check first cards
-  //   if (cardsPlayed[0][0] == cardsPlayed[1][0]) {
-  //     mode = "color"
-  //   } else if (cardsPlayed[0][1] == cardsPlayed[1][1]) {
-  //     mode = "number"
-  //   } else {
-  //     return returnCardInput()
-  //   }
-
-  //   if (mode == "color") {
-  //     colorPlayed = cardsPlayed[0][0]
-  //   } else if (mode == "number") {
-  //     colorPlayed = cardsPlayed[0][1]
-  //   }
-
-  //   // check the rest of cards
-  //   for (let i = 2; i < cardsPlayed.length; i++) {
-  //     switch (mode) {
-  //       case "number":
-  //         if (numberPlayed != numberPlayed[i][0]) {
-  //           return returnCardInput()
-  //         }
-  //         break;
-  //       case "color":
-  //         if (colorPlayed != cardsPlayed[i][0]) {
-  //           return returnCardInput()
-  //         }
-  //         break;
-  //     }
-  //   }
-  // }
-
-  // // for card on the top of lobbyList
-  // colorTop = cardsListLobby[0][0]
-  // numberTop = cardsListLobby[0][1]
-
-  // // Gameplay
-  // // check color/number/symbol
-  // if (colorTop != colorPlayed && numberTop != numberPlayed && colorPlayed != "S") {
-  //   req.message = "bro, it's not match wtf are you doing"
-  //   return next()
-  // }
-
-  // // check for +
-  // if (numberTop == "T" || numberTop == "F") {
-  //   if (ruleset.canStackPlus == false) {
-  //     let cardsDrawed
-  //     [cardsDrawed, cardsListLobby] = drawCardsArray(
-  //       cardsListLobby,
-  //       numberTop == "T"?2:numberTop == "F"?4:0
-  //     )
-  //   }
-    
-  // }
-
-  // // logic
-  // // normal color case
-  // if (!(
-  //   colorTop == colorPlayed ||
-  //   numberTop == numberPlayed ||
-  //   colorPlayed == "S"
-  // )) {
-  //   req.message = "shitty input lol"
-  //   return next()
-  // }
-
-  // // if (numberTop == "T")
-
-  // // check for +
-  // if (
-  //   (numberTop == "F" || numberTop == "T") && 
-  //   !(numberPlayed == "F" || numberPlayed == "T")
-  // ) {
-  //   // TODO: draw
-  // }
-
-  // special
 
 }
