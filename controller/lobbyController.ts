@@ -4,7 +4,7 @@ import { sign } from "jsonwebtoken"
 import { Lobby, PrismaClient } from '@prisma/client'
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt"
 import { json } from "stream/consumers"
-import { unoShuffle } from "../utils/unoTools"
+import { unoShuffle } from "../utils/cardsTools"
 import passport from "passport"
 const prisma = new PrismaClient()
 

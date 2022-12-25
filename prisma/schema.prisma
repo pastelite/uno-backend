@@ -21,27 +21,28 @@ datasource db {
 // }
 
 model Lobby {
-  code        String    @id
+  code        String   @id
   name        String
   description String?
   cardsList   String
-  turnNo      Int       @default(0)
-  way         Int       @default(1)
-  playerTurn  Int       @default(0)
+  turnNo      Int      @default(0)
+  way         Int      @default(1)
+  playerTurn  Int      @default(0)
   playerList  Player[]
-  playerNum   Int       @default(0)
-  isStart     Boolean   @default(false)
-  ruleset     String    @default("7|t")
+  playerNum   Int      @default(0)
+  isStart     Boolean  @default(false)
+  ruleset     String   @default("7|t|t")
+  plusCount   Int      @default(0)
 }
 
 model Player {
-  id          Int     @id @default(autoincrement())
-  lobby       Lobby   @relation(fields: [lobbyCode], references: [code])
-  lobbyCode   String
-  lobbyOrder  Int
-  name        String
-  isActive    Boolean @default(true)
-  cardsList   String  @default("")
+  id         Int     @id @default(autoincrement())
+  lobby      Lobby   @relation(fields: [lobbyCode], references: [code])
+  lobbyCode  String
+  lobbyOrder Int
+  name       String
+  isActive   Boolean @default(true)
+  cardsList  String  @default("")
 
   // I should delete the player when player disconnect or kicked 
   // but I don't want to calculate playerTurn and change order of everyone in lobby
