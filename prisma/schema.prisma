@@ -24,7 +24,8 @@ model Lobby {
   code        String   @id
   name        String
   description String?
-  cardsList   String
+  drawPile    String
+  discardPile String
   turnNo      Int      @default(0)
   way         Int      @default(1)
   playerTurn  Int      @default(0)
@@ -42,7 +43,7 @@ model Player {
   lobbyOrder Int
   name       String
   isActive   Boolean @default(true)
-  cardsList  String  @default("")
+  cardsOnHand String  @default("")
 
   // I should delete the player when player disconnect or kicked 
   // but I don't want to calculate playerTurn and change order of everyone in lobby

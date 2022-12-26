@@ -1,9 +1,10 @@
 export default function reader(input: String) {
   // startdraw|canstackcard|canstack+
-  input.split("|")
+  let split = input.split("|")
+  // console.log(inpu)
   return {
-    startDraw: parseInt(input[0]),
-    canStackCards: input[1] == "t" ? true : false,
-    canStackPlus: input[2] == "t" ? true : false
+    startDraw: parseInt(split[0]),
+    canStackCards: split[1] == "t",
+    canStackPlus: split[2] == "t"
   }
 }

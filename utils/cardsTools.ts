@@ -53,6 +53,8 @@ export function drawCardsArray(cardsList: string[], n: number) {
   let remainList = cardsList.slice(n)
   return [drawedList, remainList]
 }
+
+// 
 // let unoDeckArray = []
   // // let color = "R"
   // for (let color of ["R","Y","G","B"]) {

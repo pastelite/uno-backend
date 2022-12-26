@@ -78,7 +78,8 @@ export let createLobby: RequestHandler = async (req, res, next) => {
     data: {
       code: code,
       name: req.body.roomName,
-      cardsList: cardsList,
+      drawPile: cardsList,
+      discardPile: "",
       description: req.body.roomDesc,
       playerNum: 1, // 1 from room owner
     }
@@ -193,7 +194,7 @@ export let jwtAuthentication: RequestHandler = async (req, res, next) => {
       // sdaweq
       let lobby = await prisma.lobby.findFirst({
         where: {code: payload.lobby},
-        include: {playerList: true}
+        include: {playerList: true},
       })
 
       // check player id
