@@ -192,7 +192,19 @@ let playCard: RequestHandler = async (req, res, next) => {
     }
   }
 
-  // TODO: stop/reverse/thing like that
+  // reverse
+  if (playedNumber[0] == "R") {
+    lobbyUpdater.lobby.way = -lobbyUpdater.lobby.way
+  }
+
+  // step up turn
+  if (playedNumber[0] == "S") {
+    lobbyUpdater.addTurn(2)
+  } else {
+    lobbyUpdater.addTurn()
+  }
+  
+  // TODO: dont forgot to add the card to discardpile and remove from hand
 
   // AFTER ENTIRE THING FINISHED
   playerUpdater.log()

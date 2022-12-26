@@ -194,7 +194,11 @@ export let jwtAuthentication: RequestHandler = async (req, res, next) => {
       // sdaweq
       let lobby = await prisma.lobby.findFirst({
         where: {code: payload.lobby},
-        include: {playerList: true},
+        include: {playerList: {
+          orderBy: {
+            lobbyOrder: 'asc'
+          }
+        }},
       })
 
       // check player id

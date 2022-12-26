@@ -83,6 +83,34 @@ export class LobbyUpdater {
     this.discardPile = this.discardPile.concat(data)
   }
 
+  addTurn(n = 1) {
+    for (let i = 0; i<n;i++) {
+      while(true) {
+        
+        if (this.lobby.playerList.length == 0) {
+          console.log("wtf no player?")
+          break;
+        }
+
+        this.lobby.playerTurn += this.lobby.way
+
+        // if reaching limit
+        if (this.lobby.playerTurn == this.lobby.playerNum) {
+          this.lobby.playerTurn = 0
+        } else if (this.lobby.playerTurn == -1) {
+          this.lobby.playerTurn = this.lobby.playerNum-1
+        }
+
+        // if player active
+        if (this.lobby.playerList[this.lobby.playerTurn].isActive) {
+          break;
+        }
+      }
+      
+    }
+    this.lobby.turnNo += 1
+  }
+
   log() {
     console.log(this.lobby)
   }
