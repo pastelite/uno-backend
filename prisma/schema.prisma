@@ -44,6 +44,8 @@ model Player {
   name       String
   isActive   Boolean @default(true)
   cardsOnHand String  @default("")
+  isDrawed   Boolean @default(false)
+  isPlayed   Boolean @default(false)
 
   // I should delete the player when player disconnect or kicked 
   // but I don't want to calculate playerTurn and change order of everyone in lobby

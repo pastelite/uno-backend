@@ -1,14 +1,17 @@
 import { Request, Response, NextFunction, Router } from "express";
 import { listLobby, createLobby, joinLobby, jwtAuthentication } from "../controller/lobbyController";
-import { getLobbyAction, lobbyDefaultReply, postLobbyAction } from "../controller/gameController";
+import { getLobbyAction, lobbyDefaultReply, postLobbyAction } from "../controller/gameControllerOld";
 import { PrismaClient } from "@prisma/client";
 import { LobbyUpdater } from "../utils/gameTools";
+import { lobbyGet, lobbyPost } from "../controller/gameController";
 
 // /lobby/:code/
 let lobbyRouter = Router();
 lobbyRouter.use('/',jwtAuthentication)
-lobbyRouter.get('/',getLobbyAction, lobbyDefaultReply)
-lobbyRouter.post('/',postLobbyAction, lobbyDefaultReply)
+lobbyRouter.get('/',lobbyGet)
+lobbyRouter.post('/',lobbyPost)
+// lobbyRouter.get('/',getLobbyAction, lobbyDefaultReply)
+// lobbyRouter.post('/',postLobbyAction, lobbyDefaultReply)
 
 // /lobby/
 let router = Router();

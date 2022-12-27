@@ -80,10 +80,10 @@ export class LobbyUpdater {
 
   addDiscardPile(data: string[]) {
     data.reverse()
-    this.discardPile = this.discardPile.concat(data)
+    this.discardPile = data.concat(this.discardPile)
   }
 
-  addTurn(n = 1) {
+  toNextPlayer(n = 1) {
     for (let i = 0; i<n;i++) {
       while(true) {
         
@@ -108,10 +108,17 @@ export class LobbyUpdater {
       }
       
     }
+    
+  }
+
+  addTurn() {
     this.lobby.turnNo += 1
   }
 
   log() {
+    this.lobby.drawPile = this.drawPile.join('')
+    this.lobby.discardPile = this.discardPile.join('')
+
     console.log(this.lobby)
   }
 
@@ -146,12 +153,25 @@ export class PlayerUpdater {
   }
 
   log() {
+    this.player.cardsOnHand = this.cardsOnHand.join('')
+
     console.log(this.player)
   }
 
   addCardOnHand(data: string[]) {
     this.cardsOnHand = this.cardsOnHand.concat(data)
     //this.player.cardsOnHand += data.join('')
+  }
+
+  removeCardOnHand(data: number[]) {
+    // reverse data
+    data.sort().reverse()
+    // remove from hand
+    console.log("before"+this.cardsOnHand)
+    for (let i of data) {
+      this.cardsOnHand.splice(i,1)
+    }
+    console.log("after"+this.cardsOnHand)
   }
 
   async saveUpdate() {
